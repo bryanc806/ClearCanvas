@@ -149,6 +149,9 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RemoteStudyManagement\StudyRemote.cs" />
+    <Compile Include="RemoteStudyManagement\StudyRemoteServiceHostTool.cs" />
+    <Compile Include="RemoteStudyManagement\StudyRemoteServiceProvider.cs" />
     <Compile Include="SR.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -172,6 +175,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\ClearCanvas.Strings.targets" />
   <PropertyGroup>

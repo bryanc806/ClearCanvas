@@ -56,11 +56,41 @@ namespace ClearCanvas.ImageViewer.Common.StudyManagement
             return result.StudyEntries.Select(e => e.Study).ToList();
         }
 
+        /// <summary>
+        /// Evan: Query study to remote server.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <param name="dicomServerName"></param>
+        /// <returns></returns>
+        public System.Collections.Generic.IList<StudyRootStudyIdentifier> StudyQuery2(StudyRootStudyIdentifier queryCriteria, string dicomServerName)
+        {
+            throw new NotImplementedException();
+        }
+
         public System.Collections.Generic.IList<SeriesIdentifier> SeriesQuery(SeriesIdentifier queryCriteria)
         {
             var criteria = new SeriesEntry {Series = queryCriteria};
             var result = Real.GetSeriesEntries(new GetSeriesEntriesRequest { Criteria = criteria });
             return result.SeriesEntries.Select(e => e.Series).ToList();
+        }
+
+        /// <summary>
+        /// Evan: Query series to remote server.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <param name="dicomServerName"></param>
+        /// <returns></returns>
+        public System.Collections.Generic.IList<SeriesIdentifier> SeriesQuery2(SeriesIdentifier queryCriteria, string dicomServerName)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Evan: Performs a Image level query with the path within specified series.
+        /// </summary>
+        public System.Collections.Generic.IList<ImageFile> ImageQueryWithPath(ImageIdentifier queryCriteria)
+        {
+            throw new NotImplementedException();
         }
 
         public System.Collections.Generic.IList<ImageIdentifier> ImageQuery(ImageIdentifier queryCriteria)

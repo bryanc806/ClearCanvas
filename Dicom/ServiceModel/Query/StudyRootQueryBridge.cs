@@ -176,6 +176,36 @@ namespace ClearCanvas.Dicom.ServiceModel.Query
 			return results;
 		}
 
+        /// <summary>
+        /// Evan: Performs a STUDY level query to remote server (NOT IMPLEMENTED AS IT NOT USED)
+        /// </summary>
+        /// <exception cref="FaultException{TDetail}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        public IList<StudyRootStudyIdentifier> StudyQuery2(StudyRootStudyIdentifier queryCriteria, string dicomServerName)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Evan: Performs a Series level query to remote server (NOT IMPLEMENTED AS IT NOT USED)
+        /// </summary>
+        /// <exception cref="FaultException{TDetail}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        public IList<SeriesIdentifier> SeriesQuery2(SeriesIdentifier queryCriteria, string dicomServerName)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Evan: Performs a Image level query with the path within specified series. (NOT IMPLEMENTED AS IT NOT USED)
+        /// </summary>
+        /// <exception cref="FaultException{TDetail}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        public IList<ImageFile> ImageQueryWithPath(ImageIdentifier queryCriteria)
+        {
+            throw new NotImplementedException();
+        }
+
 		/// <summary>
 		/// Performs a SERIES level query.
 		/// </summary>

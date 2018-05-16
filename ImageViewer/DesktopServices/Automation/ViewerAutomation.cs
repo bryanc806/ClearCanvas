@@ -187,6 +187,152 @@ namespace ClearCanvas.ImageViewer.DesktopServices.Automation
             }
         }
 
+        /// <summary>
+        /// Open the specified series
+        /// </summary>
+        /// <param name="request">(StudyInstanceUid and SeriesInstanceUid are required)</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Create by Evan Zhuang on 7/1/2016
+        /// Filter the images. e.g Filter="1-3,5,8", it filter out the 1,2,3,5,8
+        /// </remarks>
+        public OpenSeriesResult OpenSeries(OpenSeriesRequest request)
+        {
+            // Verify the input request
+            if (request == null)
+            {
+                const string message = "The open series request cannot be null.";
+                Platform.Log(LogLevel.Debug, message);
+                throw new FaultException(message);
+            }
+
+            if (request.SeriesToOpen == null || request.SeriesToOpen.Count == 0)
+            {
+                const string message = "At least one series must be specified.";
+                Platform.Log(LogLevel.Debug, message);
+                throw new FaultException(message);
+            }
+
+            if (request.SeriesToOpen[0].StudyInstanceUid == null || request.SeriesToOpen[0].SeriesInstanceUid == null)
+            {
+                const string message = "StudyInstanceUid and SeriesInstanceUid must be specified.";
+                Platform.Log(LogLevel.Debug, message);
+                throw new FaultException(message);
+            }
+
+            // Get all the images for the specifed study and series (Refer to StudyLocator)
+            ImageIdentifier queryCriteria = new ImageIdentifier();
+            queryCriteria.StudyInstanceUid = request.SeriesToOpen[0].StudyInstanceUid;
+            queryCriteria.SeriesInstanceUid = request.SeriesToOpen[0].SeriesInstanceUid;
+
+            var allImages = new List<ImageIdentifier>();
+            foreach (var priorsServer in ServerDirectory.GetPriorsServers(true))
+            {
+                try
+                {
+                    IList<ImageIdentifier> r = null;
+                    priorsServer.GetService<IStudyRootQuery>(service => r = service.ImageQuery(queryCriteria));
+                    allImages.AddRange(r);
+                }
+                catch (Exception)
+                {
+                    const string message = "Error when querying images in specified series.";
+                    Platform.Log(LogLevel.Debug, message);
+                    throw new FaultException(message);
+                }
+            }
+
+            // Filter the files with the filters
+            // Parse the format 'N-M,O,P,Q..'. The file sequence specified start from 1.
+            HashSet<int> filters = new HashSet<int>();
+            if (!String.IsNullOrEmpty(request.SeriesFileter))
+            {
+                string[] groups = request.SeriesFileter.Split(',');
+                int index = -1;
+                foreach (string g in groups)
+                {
+                    if (String.IsNullOrEmpty(g)) continue;
+                    if (g.IndexOf('-') < 0)
+                    {
+                        if (Int32.TryParse(g.Trim(), out index)) filters.Add(index);
+                    }
+                    else
+                    {
+                        string[] lists = g.Split('-');
+                        int start = -1;
+                        int end = -1;
+
+                        if (Int32.TryParse(lists[0], out start) && Int32.TryParse(lists[1], out end) && start > 0 && end > 0)
+                        {
+                            for (int i = start; i <= end; i++) filters.Add(i);
+                        }
+                    }
+                }
+            }
+
+            // Get all the files in the series
+            var allFiles = new List<String>();
+            string storeDir = StudyStore.FileStoreDirectory;
+            string studyFolder = System.IO.Path.Combine(storeDir, queryCriteria.StudyInstanceUid);
+
+            // Conver the images with files
+            for (int i = 0; i < allImages.Count; i++)
+            {
+                //
+                // Verify the filter
+                // DICOM-117
+                // Change Series Filter Operation to utilize Series Instance ID
+                // Implmentation provided by Seno, B Clingman.
+                //
+                ImageIdentifier image = allImages[i];
+                if (filters.Count > 0 && !filters.Contains(image.InstanceNumber.Value)) continue;
+
+                // Refer to ClearCanvas.ImageViewer.StudyManagement.Core.Storage.StudyLocation
+                string imagePath = System.IO.Path.Combine(studyFolder, String.Format("{0}.{1}", image.SopInstanceUid, "dcm"));
+                allFiles.Add(imagePath);
+            }
+
+            // Try to open the files
+            var helper = new OpenFilesHelper();
+            try
+            {
+                foreach (var file in allFiles)
+                    FileProcessor.Process(file, null, helper.AddFile, true);
+            }
+            catch (Exception e)
+            {
+                Platform.Log(LogLevel.Error, e);
+                const string message = "There was a problem with the files/directories specified.";
+                throw new FaultException<OpenFilesFault>(new OpenFilesFault { FailureDescription = message }, message);
+            }
+
+            if (request.WaitForFilesToOpen.HasValue && !request.WaitForFilesToOpen.Value)
+            {
+                SynchronizationContext.Current.Post(ignore => helper.OpenFiles(), null);
+                return new OpenSeriesResult();
+            }
+
+            try
+            {
+                helper.HandleErrors = false;
+                var viewer = helper.OpenFiles();
+                var viewerId = ViewerAutomationTool.GetViewerId(viewer);
+                return new OpenSeriesResult { Viewer = new Viewer(viewerId.Value, GetPrimaryStudyIdentifier(viewer)) };
+
+            }
+            catch (Exception e)
+            {
+                if (!request.ReportFaultToUser.HasValue || request.ReportFaultToUser.Value)
+                {
+                    SynchronizationContext.Current.Post(
+                        ignore => ExceptionHandler.Report(e, ImageViewer.StudyManagement.SR.MessageFailedToOpenImages, Application.ActiveDesktopWindow), null);
+                }
+
+                const string message = "There was a problem opening the files/directories specified in the viewer.";
+                throw new FaultException<OpenFilesFault>(new OpenFilesFault { FailureDescription = message }, message);
+            }
+        }
+
 	    public OpenStudiesResult OpenStudies(OpenStudiesRequest request)
 		{
 			if (request == null)

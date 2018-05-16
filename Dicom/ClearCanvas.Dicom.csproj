@@ -212,6 +212,8 @@
     <Compile Include="Iod\FunctionalGroups\XRayTablePositionFunctionalGroup.cs" />
     <Compile Include="Iod\GradientDirection.cs" />
     <Compile Include="Iod\Iods\RawDataIod.cs" />
+    <Compile Include="Iod\Region.cs" />
+    <Compile Include="Iod\Regions.cs" />
     <Compile Include="Iod\Iods\ScImageIod.cs" />
     <Compile Include="Iod\ISeries.cs" />
     <Compile Include="Iod\ISeriesCollection.cs" />
@@ -292,6 +294,7 @@
     <Compile Include="ServiceModel\Editing\Condition.cs" />
     <Compile Include="ServiceModel\Editing\Edit.cs" />
     <Compile Include="ServiceModel\Editing\Namespace.cs" />
+    <Compile Include="ServiceModel\Query\ImageFile.cs" />
     <Compile Include="ServiceModel\Query\IStudyRootQueryApplication.cs" />
     <Compile Include="ServiceModel\Query\IStudyRootRetrieve.cs" />
     <Compile Include="ServiceModel\Query\DicomStudyRootQueryApplication.cs" />

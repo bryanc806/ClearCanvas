@@ -76,6 +76,17 @@ namespace ClearCanvas.Dicom.ServiceModel.Query
 			return base.Channel.StudyQuery(queryCriteria);
 		}
 
+        /// <summary>
+        /// Evan: Query study to remote server.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <param name="dicomServerName"></param>
+        /// <returns></returns>
+        public IList<StudyRootStudyIdentifier> StudyQuery2(StudyRootStudyIdentifier queryCriteria, string dicomServerName)
+        {
+            return base.Channel.StudyQuery2(queryCriteria, dicomServerName);
+        }
+
 		/// <summary>
 		/// Performs a SERIES level query.
 		/// </summary>
@@ -85,6 +96,26 @@ namespace ClearCanvas.Dicom.ServiceModel.Query
 		{
 			return base.Channel.SeriesQuery(queryCriteria);
 		}
+
+        /// <summary>
+        /// Evan: Query series to remote server.
+        /// </summary>
+        /// <exception cref="FaultException{DataValidationFault}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        public IList<SeriesIdentifier> SeriesQuery2(SeriesIdentifier queryCriteria, string dicomServerName)
+        {
+            return base.Channel.SeriesQuery2(queryCriteria, dicomServerName);
+        }
+
+        /// <summary>
+        /// Evan: Performs a Image level query with the path within specified series.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <returns></returns>
+        public IList<ImageFile> ImageQueryWithPath(ImageIdentifier queryCriteria)
+        {
+            return base.Channel.ImageQueryWithPath(queryCriteria);
+        }
 
 		/// <summary>
 		/// Performs an IMAGE level query.

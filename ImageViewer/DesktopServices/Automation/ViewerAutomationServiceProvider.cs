@@ -70,6 +70,23 @@ namespace ClearCanvas.ImageViewer.DesktopServices.Automation
 			return Execute(a => a.OpenStudies(request));
 		}
 
+        public OpenSeriesResult OpenSeries(OpenSeriesRequest request)
+        {
+            // Done for reasons of speed, as well as the fact that a call to the service from the same thread
+            // that the service is hosted on (the main UI thread) will cause a deadlock.
+            if (SynchronizationContext.Current == ViewerAutomationServiceHostTool.HostSynchronizationContext)
+            {
+                return new ViewerAutomation().OpenSeries(request);
+            }
+            else
+            {
+                using (ViewerAutomationServiceClient client = new ViewerAutomationServiceClient())
+                {
+                    return client.OpenSeries(request);
+                }
+            }
+        }
+
         public OpenFilesResult OpenFiles(OpenFilesRequest request)
         {
 			return Execute(a => a.OpenFiles(request));

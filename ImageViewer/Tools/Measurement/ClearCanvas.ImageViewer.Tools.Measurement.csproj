@@ -118,6 +118,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="Icons\OARoiToolLarge.png" />
+	<EmbeddedResource Include="Icons\OARoiToolMedium.png" />
+	<EmbeddedResource Include="Icons\OARoiToolSmall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="OARoiTool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

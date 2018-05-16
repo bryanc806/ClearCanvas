@@ -162,6 +162,10 @@
       <DependentUpon>MouseToolSettings.settings</DependentUpon>
     </Compile>
     <Compile Include="BaseTools\MouseToolSettingsProfile.cs" />
+    <Compile Include="Graphics\OARoiGraphic.cs" />
+    <Compile Include="Graphics\RegionalPolylineGraphic.cs" />
+    <Compile Include="InteractiveGraphics\OARoiMoveControlGraphic.cs" />
+    <Compile Include="InteractiveGraphics\OAVertexControlGraphic.cs" />
     <Compile Include="BasicPresentationImage3D.cs" />
     <Compile Include="Graphics3D\BoundableGraphic3D.cs" />
     <Compile Include="Graphics3D\CompositeGraphic3D.cs" />

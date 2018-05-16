@@ -125,6 +125,13 @@ namespace ClearCanvas.ImageViewer.StudyManagement
 				// cross-sectional images use Pixel Spacing (0028,0030)
 				SetValues(_frame.PixelSpacing, NormalizedPixelSpacingCalibrationType.CrossSectionalSpacing, String.Empty);
 			}
+            else if (_frame.Regions != null 
+                     && _frame.Regions.theRegions !=null
+                     && _frame.Regions.theRegions.Length >0 )    // sgd for Seno
+            {
+                //  For OA and IUS images with regions, use PixelSpacing of Region[0].  (Assumes all regions have the same PixelSpacing). 
+                SetValues(_frame.Regions.theRegions[0].RegionPixelSpacing, NormalizedPixelSpacingCalibrationType.Detector, string.Empty);
+            }
 			else if (_frame.PixelSpacing.IsNull || _frame.PixelSpacing.Equals(_frame.ImagerPixelSpacing))
 			{
 				// projection images using Imager Pixel Spacing (0018,1164) alone or with same value in Pixel Spacing (0028,0030)

@@ -43,6 +43,16 @@ namespace ClearCanvas.Dicom.ServiceModel.Query
 		[OperationContract(IsOneWay = false)]
 		IList<StudyRootStudyIdentifier> StudyQuery(StudyRootStudyIdentifier queryCriteria);
 
+        /// <summary>
+        /// Evan: Performs a STUDY level query to a remote server
+        /// </summary>
+        /// <exception cref="FaultException{DataValidationFault}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        [FaultContract(typeof(DataValidationFault))]
+        [FaultContract(typeof(QueryFailedFault))]
+        [OperationContract(IsOneWay = false)]
+        IList<StudyRootStudyIdentifier> StudyQuery2(StudyRootStudyIdentifier queryCriteria, string dicomServerName);
+
 		/// <summary>
 		/// Performs a SERIES level query.
 		/// </summary>
@@ -52,6 +62,26 @@ namespace ClearCanvas.Dicom.ServiceModel.Query
 		[FaultContract(typeof(QueryFailedFault))]
 		[OperationContract(IsOneWay = false)]
 		IList<SeriesIdentifier> SeriesQuery(SeriesIdentifier queryCriteria);
+
+        /// <summary>
+        /// Performs a SERIES level query to a remote server
+        /// </summary>
+        /// <exception cref="FaultException{DataValidationFault}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        [FaultContract(typeof(DataValidationFault))]
+        [FaultContract(typeof(QueryFailedFault))]
+        [OperationContract(IsOneWay = false)]
+        IList<SeriesIdentifier> SeriesQuery2(SeriesIdentifier queryCriteria, string dicomServerName);
+
+        /// <summary>
+        /// Performs a Image level query with the path within specified series.
+        /// </summary>
+        /// <exception cref="FaultException{DataValidationFault}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        [FaultContract(typeof(DataValidationFault))]
+        [FaultContract(typeof(QueryFailedFault))]
+        [OperationContract(IsOneWay = false)]
+        IList<ImageFile> ImageQueryWithPath(ImageIdentifier queryCriteria);
 
 		/// <summary>
 		/// Performs an IMAGE level query.

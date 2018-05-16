@@ -72,6 +72,11 @@ namespace ClearCanvas.ImageViewer.Common.Automation
             return base.Channel.OpenFiles(request);
         }
 
+        public OpenSeriesResult OpenSeries(OpenSeriesRequest request)
+        {
+            return base.Channel.OpenSeries(request);
+        }
+
 		public OpenStudiesResult OpenStudies(OpenStudiesRequest request)
 		{
 			return base.Channel.OpenStudies(request);

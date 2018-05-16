@@ -157,34 +157,34 @@ namespace ClearCanvas.ImageViewer.InteractiveGraphics
 			}
 			else if (_numberOfPointsAnchored >= 4 && AtOrigin(mouseInformation.Location) && mouseInformation.ClickCount == 1) // We're done creating
 			{
-				this.NotifyGraphicComplete();
+                this.NotifyGraphicComplete();
 			}
 			else if (_numberOfPointsAnchored >= 3 && _numberOfPointsAnchored >= _maximumVertices && mouseInformation.ClickCount == 1) // We're done creating
 			{
-				this.Graphic.CoordinateSystem = CoordinateSystem.Destination;
+                this.Graphic.CoordinateSystem = CoordinateSystem.Destination;
 				try
 				{
-					this.Graphic.Points.Add(this.Graphic.Points[0]);
+				this.Graphic.Points.Add(this.Graphic.Points[0]);
 				}
 				finally
 				{
-					this.Graphic.ResetCoordinateSystem();
+				this.Graphic.ResetCoordinateSystem();
 				}
 				this.NotifyGraphicComplete();
 			}
 			else if (_numberOfPointsAnchored >= 2 && mouseInformation.ClickCount == 1) // We're in the middle of creating
 			{
-				this.Graphic.CoordinateSystem = CoordinateSystem.Destination;
+                this.Graphic.CoordinateSystem = CoordinateSystem.Destination;
 				try
 				{
 					// ensures that the last anchored point is updated to the current point, in case the last tracked point wasn't equal to current location
 					this.Graphic.Points[Graphic.Points.Count - 1] = mouseInformation.Location;
-					this.Graphic.Points.Add(mouseInformation.Location);
+				this.Graphic.Points.Add(mouseInformation.Location);
 				}
 				finally
 				{
-					this.Graphic.ResetCoordinateSystem();
-				}
+				this.Graphic.ResetCoordinateSystem();
+			}
 			}
 			else if (mouseInformation.ClickCount > 1)
 			{

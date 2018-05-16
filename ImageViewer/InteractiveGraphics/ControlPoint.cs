@@ -63,8 +63,14 @@ namespace ClearCanvas.ImageViewer.InteractiveGraphics
 				if (_rectangle == null)
 				{
 					_rectangle = new InvariantRectanglePrimitive();
-					_rectangle.InvariantTopLeft = new PointF(-4, -4);
-					_rectangle.InvariantBottomRight = new PointF(4, 4);
+                    // 
+                    // RJS 
+                    // 11/30/2017
+                    // DICOM-116
+                    // Decrease the size of ROI handles on the OA ROI.
+                    //
+					_rectangle.InvariantTopLeft = new PointF(-0, -0);
+					_rectangle.InvariantBottomRight = new PointF(1, 1);
 					this.Graphics.Add(_rectangle);
 				}
 

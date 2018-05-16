@@ -192,6 +192,9 @@
   <data name="CommandCreatePolygonalRoi" xml:space="preserve">
     <value>Create Polygonal ROI</value>
   </data>
+  <data name="CommandCreateOARoi" xml:space="preserve">
+    <value>Create OA ROI</value>
+  </data>
   <data name="MenuPolygonalRoi" xml:space="preserve">
     <value>Polygonal ROI</value>
   </data>
@@ -200,6 +203,15 @@
   </data>
   <data name="TooltipPolygonalRoi" xml:space="preserve">
     <value>Polygonal ROI</value>
+  </data>
+  <data name="MenuOARoi" xml:space="preserve">
+    <value>OA ROI</value>
+  </data>
+  <data name="ToolbarOARoi" xml:space="preserve">
+    <value>OA ROI</value>
+  </data>
+  <data name="TooltipOARoi" xml:space="preserve">
+    <value>OA ROI</value>
   </data>
   <data name="FormatEllipseName" xml:space="preserve">
     <value>Ellipse {0}</value>
@@ -224,5 +236,8 @@
   </data>
   <data name="TooltipShowAngles" xml:space="preserve">
     <value>Show Angles</value>
+  </data>
+  <data name="FormatOAName" xml:space="preserve">
+    <value>OA {0}</value>
   </data>
 </root>

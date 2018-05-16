@@ -613,6 +613,8 @@ namespace ClearCanvas.ImageViewer.StudyManagement
 		{
 			get
 			{
+                // Testing 
+                Regions aRegions = this.Regions;
 			    var value = _cache.ImagePlane.ImagerPixelSpacing;
 			    if (value != null)
 			        return value;
@@ -623,6 +625,30 @@ namespace ClearCanvas.ImageViewer.StudyManagement
 			    return value;
 			}
 		}
+
+        /// <summary>
+        /// Gets the DICOM SequenceOfUltrasoundRegions.
+        /// </summary>
+        /// <remarks>
+        /// Generally you would accl this if the Pixel spacing is O,O to retrieve information 
+        /// needed the draw ROI's and Measurements.
+        /// </remarks>
+        public virtual Regions Regions
+        {
+            get
+            {
+                Regions aRegions = null;
+                string aSequenceOfUltrasoundRegions;
+                aSequenceOfUltrasoundRegions = _parentImageSop[DicomTags.SequenceOfUltrasoundRegions].ToString();
+                if (!string.IsNullOrEmpty(aSequenceOfUltrasoundRegions))
+                {
+                    ClearCanvas.Dicom.DicomSequenceItem[] aDicomSequenceItem = (ClearCanvas.Dicom.DicomSequenceItem[])_parentImageSop[DicomTags.SequenceOfUltrasoundRegions].Values;
+                    if (aDicomSequenceItem != null) aRegions = new Dicom.Iod.Regions(aDicomSequenceItem);
+                    return aRegions;
+                }
+                return null;
+            }
+        }
 
 		#endregion
 

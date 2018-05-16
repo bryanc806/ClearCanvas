@@ -192,6 +192,10 @@ namespace ClearCanvas.Common
 				if (_version == null)
 				{
 					string version = Decrypt(_settings.Version);
+
+                    // Use this to test Encryption
+                    //string TestVersion = "2.0.16.9";
+                    //string testEncrypt = Encrypt(TestVersion);
 					try
 					{
 						if (String.IsNullOrEmpty(version))
@@ -285,6 +289,46 @@ namespace ClearCanvas.Common
 			}
 			return result;
 		}
+
+        public static string Encrypt(string @string)
+        {
+            if (String.IsNullOrEmpty(@string))
+                return @string;
+
+            string result;
+            try
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(@string);
+                using (MemoryStream dataStream = new MemoryStream())
+                {
+                    XorCryptoServiceProvider cryptoService = new XorCryptoServiceProvider();
+
+                    cryptoService.Key = Encoding.UTF8.GetBytes("ClearCanvas");
+                    cryptoService.IV = Encoding.UTF8.GetBytes("IsSoCool");
+                    using (CryptoStream cryptoStream = new CryptoStream(dataStream, cryptoService.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter writer = new StreamWriter(cryptoStream, Encoding.UTF8))
+                        {
+                            writer.Write(@string);
+                            writer.Close();
+                        }
+                        // Output the text
+                        result = Convert.ToBase64String(dataStream.ToArray());
+
+                        // Encrypt the text
+                        //cryptoStream.Write(bytes, 0, bytes.Length);
+
+                        cryptoStream.Close();
+                    }
+                    dataStream.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                result = string.Empty;
+            }
+            return result;
+        }
 	}
 
 	/// <summary>

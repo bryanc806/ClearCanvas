@@ -36,7 +36,7 @@ namespace ClearCanvas.ImageViewer.InteractiveGraphics
 	/// An interactive graphic that allows a subject graphic to be moved.
 	/// </summary>
 	[Cloneable]
-	public sealed class MoveControlGraphic : ControlGraphic, IMemorable
+	public class MoveControlGraphic : ControlGraphic, IMemorable
 	{
 		[CloneCopyReference]
 		private CursorToken _cursor;

@@ -67,6 +67,52 @@ namespace ClearCanvas.Dicom.ServiceModel.Query
 			return result.Results;
 		}
 
+        /// <summary>
+        /// Evan: Query series to remote server.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <param name="dicomServerName"></param>
+        /// <returns></returns>
+        public IList<SeriesIdentifier> SeriesQuery2(SeriesIdentifier queryCriteria, string dicomServerName)
+        {
+            var request = new SeriesQueryRequest
+            {
+                Criteria = queryCriteria,
+                LocalApplicationEntity = _localAE,
+                RemoteApplicationEntity = new ApplicationEntity(_remoteAE)
+            };
+
+            var query = new DicomStudyRootQueryApplication();
+            var result = query.SeriesQuery(request);
+            return result.Results;
+
+            // Don't assgin server values, since they should have values in the constructor
+            // RJS OLD CODE BASE return Query<SeriesIdentifier, StudyRootFindScu>(queryCriteria);
+        }
+
+        /// <summary>
+        /// Evan: Query study to remote server.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <param name="dicomServerName"></param>
+        /// <returns></returns>
+        public IList<StudyRootStudyIdentifier> StudyQuery2(StudyRootStudyIdentifier queryCriteria, string dicomServerName)
+        {
+            var request = new StudyQueryRequest
+            {
+                Criteria = queryCriteria,
+                LocalApplicationEntity = _localAE,
+                RemoteApplicationEntity = new ApplicationEntity(_remoteAE)
+            };
+
+            var query = new DicomStudyRootQueryApplication();
+            var result = query.StudyQuery(request);
+            return result.Results;
+
+            // Don't assgin server values, since they should have values in the constructor
+            //RJS OLD CODE BASE  return Query<StudyRootStudyIdentifier, StudyRootFindScu>(queryCriteria);
+        } 
+
 		public IList<SeriesIdentifier> SeriesQuery(SeriesIdentifier queryCriteria)
 		{
 			var request = new SeriesQueryRequest
@@ -80,6 +126,34 @@ namespace ClearCanvas.Dicom.ServiceModel.Query
 			var result = query.SeriesQuery(request);
 			return result.Results;
 		}
+
+        /// <summary>
+        /// Evan: Performs a Image level query with the path within specified series.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <returns></returns>
+        public IList<ImageFile> ImageQueryWithPath(ImageIdentifier queryCriteria)
+        {
+            // Define the return values
+            IList<ImageFile> imageFiles = new List<ImageFile>();
+
+            // Query all the images
+            ImageIdentifier imageQueryCriteria = new ImageIdentifier();
+            imageQueryCriteria.StudyInstanceUid = queryCriteria.StudyInstanceUid;
+            imageQueryCriteria.SeriesInstanceUid = queryCriteria.SeriesInstanceUid;
+
+            IList<ImageIdentifier> images = ImageQuery(imageQueryCriteria);
+            if (images == null || images.Count == 0) return imageFiles;
+
+            // Conver the images with files
+            foreach (ImageIdentifier image in images)
+            {
+                ImageFile file = new ImageFile(image);
+                imageFiles.Add(file);
+            }
+
+            return imageFiles;
+        }
 
 		public IList<ImageIdentifier> ImageQuery(ImageIdentifier queryCriteria)
 		{

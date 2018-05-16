@@ -48,6 +48,7 @@ namespace ClearCanvas.ImageViewer.Tools.Measurement
 	public partial class PolygonalRoiTool : MeasurementTool
 	{
 		public PolygonalRoiTool() : base(SR.TooltipPolygonalRoi) {}
+        public PolygonalRoiTool(string toolTip) : base(toolTip) { }
 
 		protected override string CreationCommandName
 		{
@@ -61,12 +62,12 @@ namespace ClearCanvas.ImageViewer.Tools.Measurement
 
 		protected override IGraphic CreateGraphic()
 		{
-			return new PolygonControlGraphic(true, new MoveControlGraphic(new PolylineGraphic(true)));
+            return new PolygonControlGraphic(true, new MoveControlGraphic(new PolylineGraphic(true)));
 		}
 
 		protected override InteractiveGraphicBuilder CreateGraphicBuilder(IGraphic graphic)
 		{
-			return new InteractivePolygonGraphicBuilder((IPointsGraphic) graphic);
+            return new InteractivePolygonGraphicBuilder((IPointsGraphic) graphic);
 		}
 
 		protected override IAnnotationCalloutLocationStrategy CreateCalloutLocationStrategy()

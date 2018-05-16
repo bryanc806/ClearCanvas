@@ -531,10 +531,37 @@ namespace ClearCanvas.ImageViewer.Explorer.Dicom.Tests
 				return Studies.Where(s => StudyMatcher.Invoke(s, queryCriteria)).ToList();
 			}
 
+            /// <summary>
+            /// Evan: Query study to remote server.
+            /// </summary>
+            /// <param name="queryCriteria"></param>
+            /// <param name="dicomServerName"></param>
+            /// <returns></returns>
+            public IList<StudyRootStudyIdentifier> StudyQuery2(StudyRootStudyIdentifier queryCriteria, string dicomServerName)
+            {
+                throw new NotImplementedException();
+            }
+
 			public IList<SeriesIdentifier> SeriesQuery(SeriesIdentifier queryCriteria)
 			{
 				throw new NotImplementedException();
 			}
+
+            /// <summary>
+            /// Evan: Query series to remote server.
+            /// </summary>
+            /// <param name="queryCriteria"></param>
+            /// <param name="dicomServerName"></param>
+            /// <returns></returns>
+            public IList<SeriesIdentifier> SeriesQuery2(SeriesIdentifier queryCriteria, string dicomServerName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IList<ImageFile> ImageQueryWithPath(ImageIdentifier queryCriteria)
+            {
+                throw new NotImplementedException();
+            }
 
 			public IList<ImageIdentifier> ImageQuery(ImageIdentifier queryCriteria)
 			{

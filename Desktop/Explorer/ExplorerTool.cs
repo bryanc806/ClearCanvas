@@ -63,6 +63,17 @@ namespace ClearCanvas.Desktop.Explorer
 			}
 		}
 
+        public static bool LaunchAtStartup
+        {
+            get
+            {
+                if (ExplorerLocalSettings.Default.ExplorerIsPrimary)
+                    return true;
+
+                return ExplorerSettings.Default.LaunchAtStartup;
+            }
+        }
+
 		public override IActionSet Actions
 		{
 			get
@@ -177,7 +188,10 @@ namespace ClearCanvas.Desktop.Explorer
 
 		public void Startup(IDesktopWindow mainDesktopWindow)
 		{
-			ExplorerTool.ShowExplorer(mainDesktopWindow);
+            if (ExplorerTool.LaunchAtStartup)
+            {
+                ExplorerTool.ShowExplorer(mainDesktopWindow);
+            }
 		}
 	}
 }

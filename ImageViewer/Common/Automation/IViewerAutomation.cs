@@ -71,6 +71,17 @@ namespace ClearCanvas.ImageViewer.Common.Automation
 		[FaultContract(typeof(OpenStudiesFault))]
 		OpenStudiesResult OpenStudies(OpenStudiesRequest request);
 
+        /// <summary>
+        /// Opens the requested Series in a <see cref="Viewer"/>.
+        /// </summary>
+        /// <exception cref="FaultException{OpenSeriesFault}">Thrown if the primary study could not be opened.</exception>
+        /// <remarks>
+        /// Create by Evan Zhuang on 7/1/2016
+        /// </remarks>
+        [OperationContract(IsOneWay = false)]
+        [FaultContract(typeof(OpenSeriesFault))]
+        OpenSeriesResult OpenSeries(OpenSeriesRequest request);
+
 		/// <summary>
 		/// Activates the given <see cref="Viewer"/>.
 		/// </summary>

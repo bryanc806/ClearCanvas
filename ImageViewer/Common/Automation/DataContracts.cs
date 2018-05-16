@@ -107,6 +107,37 @@ namespace ClearCanvas.ImageViewer.Common.Automation
 		public string FailureDescription { get; set; }
 	}
 
+    /// <summary>
+    /// Data contract for when a failure occurs opening the requested study (or studies).
+    /// </summary>
+    /// <remarks>
+    /// Create By Evan Zhuang on 2016/7/1
+    /// </remarks>
+    [DataContract(Namespace = AutomationNamespace.Value)]
+    public class OpenSeriesFault
+    {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public OpenSeriesFault()
+        {
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public OpenSeriesFault(string failureDescription)
+        {
+            FailureDescription = failureDescription;
+        }
+
+        /// <summary>
+        /// Textual description of the failure.
+        /// </summary>
+        [DataMember(IsRequired = false)]
+        public string FailureDescription { get; set; }
+    }
+
 	/// <summary>
 	/// Data contract for when a failure occurs opening the requested study (or studies).
 	/// </summary>
@@ -363,6 +394,59 @@ namespace ClearCanvas.ImageViewer.Common.Automation
 		[DataMember(IsRequired = false)]
 		public string SourceAETitle { get; set; }
 	}
+
+    /// <summary>
+    /// Data contract for defining series to be opened via <see cref="IViewerAutomation.OpenSeries"/>.
+    /// </summary>
+    /// <remarks>
+    /// Create By Evan Zhuang on 2016/7/1
+    /// </remarks>
+    [DataContract(Namespace = AutomationNamespace.Value)]
+    public class OpenSeriesRequest
+    {
+        /// <summary>
+        /// A list of files and/or directories that will be loaded recursively into a single viewer.
+        /// </summary>
+        [DataMember(IsRequired = true)]
+        public List<SeriesIdentifier> SeriesToOpen { get; set; }
+
+        /// <summary>
+        /// Specifies whether or not the call should block waiting for the files to load into a viewer;
+        /// if unspecified, the service will block waiting for the files to open before returning.
+        /// </summary>
+        [DataMember(IsRequired = false)]
+        public bool? WaitForFilesToOpen { get; set; }
+
+        [DataMember(IsRequired = false)]
+        public bool? ReportFaultToUser { get; set; }
+
+        /// <summary>
+        /// Filter the images
+        /// e.g Filter="1-3,5,8", it filter out the 1,2,3,5,8
+        /// </summary>
+        [DataMember(IsRequired = false)]
+        public string SeriesFileter { get; set; }
+    }
+
+    /// <summary>
+    /// Data contracts for results returned from <see cref="IViewerAutomation.OpenSeries"/>.
+    /// </summary>
+    /// <remarks>
+    /// Create By Evan Zhuang on 2016/7/1
+    /// </remarks>
+    [DataContract(Namespace = AutomationNamespace.Value)]
+    public class OpenSeriesResult
+    {
+        /// <summary>
+        /// Identifier for the viewer in which the files were opened.
+        /// </summary>
+        /// <remarks>
+        /// If <see cref="OpenFilesRequest.WaitForFilesToOpen"/> is false, this value will be null.
+        /// </remarks>
+        [DataMember]
+        public Viewer Viewer { get; set; }
+    }
+
 
 	/// <summary>
 	/// Data contract for defining files/directories to be opened via <see cref="IViewerAutomation.OpenFiles"/>.

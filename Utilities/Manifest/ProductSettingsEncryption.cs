@@ -62,5 +62,52 @@ namespace ClearCanvas.Utilities.Manifest
 			}
 			return result;
 		}
+
+        /// <summary>
+        /// Decrypt a Product Settings string.
+        /// </summary>
+        /// <param name="string">The string to decrypt.</param>
+        /// <returns>The decrypted string.</returns>
+        public static string Encrypt(string @string)
+        {
+            if (String.IsNullOrEmpty(@string))
+                return @string;
+
+            string result;
+            try
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(@string);
+                using (MemoryStream dataStream = new MemoryStream())
+                {
+                    RC2CryptoServiceProvider cryptoService = new RC2CryptoServiceProvider
+                    {
+                        Key = Encoding.UTF8.GetBytes("ClearCanvas"),
+                        IV = Encoding.UTF8.GetBytes("IsSoCool"),
+                        UseSalt = false
+                    };
+                    using (CryptoStream cryptoStream = new CryptoStream(dataStream, cryptoService.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter writer = new StreamWriter(cryptoStream, Encoding.UTF8))
+                        {
+                            writer.Write(@string);
+                            writer.Close();
+                        }
+                        // Output the text
+                        result = Convert.ToBase64String(dataStream.ToArray());
+
+                        // Encrypt the text
+                        //cryptoStream.Write(bytes, 0, bytes.Length);
+
+                        cryptoStream.Close();
+                    }
+                    dataStream.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                result = ex.Message;
+            }
+            return result;
+        }
 	}
 }

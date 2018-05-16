@@ -60,6 +60,16 @@ namespace ClearCanvas.ImageViewer.Common.StudyManagement
         }
 
         /// <summary>
+        /// Evan Performs a STUDY level query to remote server
+        /// </summary>
+        /// <exception cref="FaultException{TDetail}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        public IList<StudyRootStudyIdentifier> StudyQuery2(StudyRootStudyIdentifier queryCriteria, string dicomServerName)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Performs a SERIES level query.
         /// </summary>
         /// <exception cref="FaultException{DataValidationFault}">Thrown when some part of the data in the request is poorly formatted.</exception>
@@ -73,6 +83,25 @@ namespace ClearCanvas.ImageViewer.Common.StudyManagement
                            queryCriteria.ToDicomAttributeCollection());
 
             return results;
+        }
+
+        /// <summary>
+        /// Evan Performs a SERIES level query to remote server
+        /// </summary>
+        /// <exception cref="FaultException{TDetail}">Thrown when some part of the data in the request is poorly formatted.</exception>
+        /// <exception cref="FaultException{QueryFailedFault}">Thrown when the query fails.</exception>
+        public IList<SeriesIdentifier> SeriesQuery2(SeriesIdentifier queryCriteria, string dicomServerName)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// Evan: Performs a Image level query with the path within specified series.
+        /// </summary>
+        public IList<ImageFile> ImageQueryWithPath(ImageIdentifier queryCriteria)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

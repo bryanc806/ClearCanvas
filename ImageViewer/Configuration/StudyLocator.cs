@@ -29,6 +29,8 @@ using ClearCanvas.Common;
 using ClearCanvas.Dicom.ServiceModel.Query;
 using ClearCanvas.ImageViewer.Common.ServerDirectory;
 using ClearCanvas.ImageViewer.Common.StudyManagement;
+using ClearCanvas.ImageViewer.Common.DicomServer;
+using ClearCanvas.ImageViewer.Common;
 
 namespace ClearCanvas.ImageViewer.Configuration
 {
@@ -118,12 +120,76 @@ namespace ClearCanvas.ImageViewer.Configuration
 			return new GenericQuery<StudyRootStudyIdentifier>(query, false).Query(queryCriteria);
 		}
 
+        /// <summary>
+        /// Evan: Query study to remote server.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <param name="dicomServerName"></param>
+        /// <returns></returns>
+        public IList<StudyRootStudyIdentifier> StudyQuery2(StudyRootStudyIdentifier queryCriteria, string dicomServerName)
+        {
+            DicomServerConfiguration localConfig = DicomServer.GetConfiguration();
+            if (String.IsNullOrEmpty(dicomServerName)) dicomServerName = "DefaultServer";
+            IDicomServiceNode serviceNode = ServerDirectory.GetRemoteServerByName(dicomServerName);
+
+            DicomStudyRootQuery dicomStudyRooteQuery = new DicomStudyRootQuery(localConfig.AETitle, serviceNode.AETitle, serviceNode.ScpParameters.HostName, serviceNode.ScpParameters.Port);
+            return dicomStudyRooteQuery.StudyQuery(queryCriteria);
+        } 
+
 		public IList<SeriesIdentifier> SeriesQuery(SeriesIdentifier queryCriteria)
 		{
 			QueryDelegate<SeriesIdentifier> query = (criteria, studyRootQuery) => studyRootQuery.SeriesQuery(criteria);
 
 			return new GenericQuery<SeriesIdentifier>(query, false).Query(queryCriteria);
 		}
+
+        /// <summary>
+        /// Evan: Query Series to remote server.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <param name="dicomServerName"></param>
+        /// <returns></returns>
+        public IList<SeriesIdentifier> SeriesQuery2(SeriesIdentifier queryCriteria, string dicomServerName)
+        {
+            DicomServerConfiguration localConfig = DicomServer.GetConfiguration();
+            // ???RJS For our purposes the configuration should not assume "DefaultServer" the server name must be provided.
+            if (String.IsNullOrEmpty(dicomServerName)) dicomServerName = "DefaultServer";
+            IDicomServiceNode serviceNode = ServerDirectory.GetRemoteServerByName(dicomServerName);
+
+            DicomStudyRootQuery dicomStudyRooteQuery = new DicomStudyRootQuery(localConfig.AETitle, serviceNode.AETitle, serviceNode.ScpParameters.HostName, serviceNode.ScpParameters.Port);
+            return dicomStudyRooteQuery.SeriesQuery(queryCriteria);
+        } 
+
+        /// <summary>
+        /// Evan: Performs a Image level query with the path within specified series.
+        /// </summary>
+        /// <param name="queryCriteria"></param>
+        /// <returns></returns>
+        public IList<ImageFile> ImageQueryWithPath(ImageIdentifier queryCriteria)
+        {
+            // Define the return values
+            IList<ImageFile> imageFiles = new List<ImageFile>();
+
+            IList<ImageIdentifier> images = ImageQuery(queryCriteria);
+            if (images == null || images.Count == 0) return imageFiles;
+
+            // Get the study folder
+            string storeDir = StudyStore.FileStoreDirectory;
+            string studyFolder = System.IO.Path.Combine(storeDir, queryCriteria.StudyInstanceUid);
+
+            // Conver the images with files
+            foreach (ImageIdentifier image in images)
+            {
+                ImageFile file = new ImageFile(image);
+                imageFiles.Add(file);
+                // Refer to ClearCanvas.ImageViewer.StudyManagement.Core.Storage.StudyLocation
+                string imagePath = System.IO.Path.Combine(studyFolder, String.Format("{0}.{1}", image.SopInstanceUid, "dcm"));
+
+                file.SetPath(studyFolder, imagePath);
+            }
+
+            return imageFiles;
+        }
 
 		public IList<ImageIdentifier> ImageQuery(ImageIdentifier queryCriteria)
 		{

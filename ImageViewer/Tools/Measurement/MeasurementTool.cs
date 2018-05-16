@@ -23,21 +23,28 @@
 #endregion
 
 using System.Drawing;
+using ClearCanvas.Common;
 using ClearCanvas.Desktop;
 using ClearCanvas.ImageViewer.BaseTools;
 using ClearCanvas.ImageViewer.Graphics;
 using ClearCanvas.ImageViewer.InputManagement;
 using ClearCanvas.ImageViewer.InteractiveGraphics;
 using ClearCanvas.ImageViewer.RoiGraphics;
+using System.Diagnostics;
 
 namespace ClearCanvas.ImageViewer.Tools.Measurement
 {
 	public abstract class MeasurementTool : MouseImageViewerTool
 	{
 		private int _serialNumber;
-		private InteractiveGraphicBuilder _graphicBuilder;
-		private DrawableUndoableCommand _undoableCommand;
+        
+        protected const int _invalidRegion = -1;
 
+		protected InteractiveGraphicBuilder _graphicBuilder;
+		protected DrawableUndoableCommand _undoableCommand;
+
+        protected int _startingRegion = -1; //keeps track of the current input region.
+        
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -59,12 +66,16 @@ namespace ClearCanvas.ImageViewer.Tools.Measurement
 		{
 			base.Start(mouseInformation);
 
-			if (_graphicBuilder != null)
-				return _graphicBuilder.Start(mouseInformation);
+            if (_graphicBuilder != null)
+            {
+                return _graphicBuilder.Start(mouseInformation);
+            }
 
             if (!CanStart(mouseInformation.Tile.PresentationImage))
+            {
                 return false;
-
+            }
+            _startingRegion = CheckRegion(mouseInformation);
 			RoiGraphic roiGraphic = CreateRoiGraphic();
 
 			_graphicBuilder = CreateGraphicBuilder(roiGraphic.Subject);
@@ -78,8 +89,10 @@ namespace ClearCanvas.ImageViewer.Tools.Measurement
 			roiGraphic.Suspend();
 			try
 			{
-				if (_graphicBuilder.Start(mouseInformation))
-					return true;
+                if (_graphicBuilder.Start(mouseInformation))
+                {
+                    return true;
+                }
 			}
 			finally
 			{
@@ -87,24 +100,40 @@ namespace ClearCanvas.ImageViewer.Tools.Measurement
 			}
 
 			this.Cancel();
+
+            _startingRegion = _invalidRegion;
 			return false;
 		}
 
+        /// <summary>
+        /// If graphic depends on regions, determines and returns the current region. Otherwise returns invalid region index.
+        /// It's the caller's responsibility to check for this.
+        /// </summary>
+        protected virtual int CheckRegion(IMouseInformation mouseInformation)
+        {
+            return _invalidRegion;
+        }
+        
 		public override bool Track(IMouseInformation mouseInformation)
 		{
-			if (_graphicBuilder != null)
-				return _graphicBuilder.Track(mouseInformation);
-
+            if (_graphicBuilder != null)
+            {
+                return _graphicBuilder.Track(mouseInformation);
+            }
 			return false;
 		}
 
 		public override bool Stop(IMouseInformation mouseInformation)
 		{
-			if (_graphicBuilder == null)
-				return false;
+            if (_graphicBuilder == null)
+            {
+                return false;
+            }
 
-			if (_graphicBuilder.Stop(mouseInformation))
-				return true;
+            if (_graphicBuilder.Stop(mouseInformation))
+            {
+                return true;
+            }
 
 			_graphicBuilder = null;
 			_undoableCommand = null;
@@ -137,7 +166,7 @@ namespace ClearCanvas.ImageViewer.Tools.Measurement
 	        return CreateRoiGraphic(true);
 	    }
 
-        protected RoiGraphic CreateRoiGraphic(bool initiallySelected)
+        protected virtual RoiGraphic CreateRoiGraphic(bool initiallySelected)
 		{
 			//When you create a graphic from within a tool (particularly one that needs capture, like a multi-click graphic),
 			//see it through to the end of creation.  It's just cleaner, not to mention that if this tool knows how to create it,
@@ -182,8 +211,45 @@ namespace ClearCanvas.ImageViewer.Tools.Measurement
 
 		protected virtual void OnRoiCreation(RoiGraphic roiGraphic) {}
 
-		private void OnGraphicBuilderComplete(object sender, GraphicEventArgs e)
+		protected virtual void OnGraphicBuilderComplete(object sender, GraphicEventArgs e)
 		{
+            // sgd - hooks to selected image are in DicomColorPresentationImage.ImageSop and .Frame
+	 	            var image = Context.Viewer.SelectedPresentationImage;
+	 	            if (image == typeof(DicomColorPresentationImage))
+	 	            {
+	 	                try
+	 	                {
+	 	                    var curFrame = ((DicomColorPresentationImage)image).Frame;
+	 	                    var reg = (Dicom.Iod.Regions)curFrame.Regions;
+	 	                    var regArray = (Dicom.Iod.Region[])(reg.theRegions);
+	 	                    for (long i = 0; i < regArray.Length; i++)
+	 	                    {
+	 	                        long minX = regArray[i].RegionLocationMinX0;
+	 	                        long minY = regArray[i].RegionLocationMinY0;
+	 	                        long maxX = regArray[i].RegionLocationMaxX1;
+	 	                        long maxY = regArray[i].RegionLocationMaxY1;
+	 	                        Platform.Log(LogLevel.Warn, "Region [" + i.ToString() + "]  " +
+	 	                            minX.ToString() + ", " + maxX.ToString() + ", " +
+	 	                            minY.ToString() + ", " + maxY.ToString());
+	 	                    }
+	 	
+	 	                    Platform.Log(LogLevel.Warn, "HitTest(76, 92) for Region 0: expect True");
+	 	                    bool bRet = regArray[0].HitTest(76, 92);
+     	                    Platform.Log(LogLevel.Warn, "bRet " + bRet.ToString());
+	 	
+	 	                    Platform.Log(LogLevel.Warn, "HitTest(588, 92) for Region 0: expect False");
+	 	                    bRet = regArray[0].HitTest(588, 92);
+	 	                    Platform.Log(LogLevel.Warn, "bRet " + bRet.ToString());
+	 	
+	 	                    Platform.Log(LogLevel.Warn, "HitTest(75, 91) for Region 0, border : expect True");
+	 	                    bRet = regArray[0].HitTest(75, 91);
+	 	                    Platform.Log(LogLevel.Warn, "bRet " + bRet.ToString());
+	 	                }
+	 	                catch(System.Exception exc)
+	 	                {
+	 	                    Platform.Log(LogLevel.Error, "Exception Testing Regions" + exc.Message);
+	 	                }
+	 	            }
 			_graphicBuilder.GraphicComplete -= OnGraphicBuilderComplete;
 			_graphicBuilder.GraphicCancelled -= OnGraphicBuilderCancelled;
 
@@ -195,7 +261,7 @@ namespace ClearCanvas.ImageViewer.Tools.Measurement
 			_graphicBuilder = null;
 		}
 
-		private void OnGraphicBuilderCancelled(object sender, GraphicEventArgs e)
+		protected virtual void OnGraphicBuilderCancelled(object sender, GraphicEventArgs e)
 		{
 			_graphicBuilder.GraphicComplete -= OnGraphicBuilderComplete;
 			_graphicBuilder.GraphicCancelled -= OnGraphicBuilderCancelled;

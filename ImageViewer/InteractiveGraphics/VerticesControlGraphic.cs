@@ -394,15 +394,17 @@ namespace ClearCanvas.ImageViewer.InteractiveGraphics
 		{
 			this.SuspendControlPointEvents();
 			this.CoordinateSystem = CoordinateSystem.Source;
-			try
-			{
-				this.ControlPoints[index] = this.Subject.Points[index];
-			}
-			finally
-			{
-				this.ResetCoordinateSystem();
+
+            if ((this.ControlPoints.Count > index) && (this.Subject.Points.Count > index))
+            {
+                this.ControlPoints[index] = this.Subject.Points[index];
+            }
+		//	}
+		//	finally
+		//	{
+                this.ResetCoordinateSystem();
 				this.ResumeControlPointEvents();
-			}
+		//	}
 		}
 
 		/// <summary>

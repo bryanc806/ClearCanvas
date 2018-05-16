@@ -65,7 +65,7 @@ namespace ClearCanvas.ImageViewer.InteractiveGraphics
 			context.CloneFields(source, this);
 		}
 
-		private void ResyncEndPoints()
+		protected void ResyncEndPoints()
 		{
 			IPointsGraphic pointsGraphic = this.Subject;
 			if (pointsGraphic.Points.Count > 1)
@@ -113,12 +113,12 @@ namespace ClearCanvas.ImageViewer.InteractiveGraphics
 			IPointsGraphic pointsGraphic = this.Subject;
 			if (pointsGraphic.Points.Count > 1)
 			{
-				if (index == 0)
-					base.OnSubjectPointChanged(pointsGraphic.Points.Count - 1);
-				if (index == pointsGraphic.Points.Count - 1)
-					base.OnSubjectPointChanged(0);
+                if (index == 0)
+                    base.OnSubjectPointChanged(pointsGraphic.Points.Count - 1);
+                if (index == pointsGraphic.Points.Count - 1)
+                    base.OnSubjectPointChanged(0);
+                }
 			}
-		}
 
 		/// <summary>
 		/// Called to notify the derived class of a control point change event.
