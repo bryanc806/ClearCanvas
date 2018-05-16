@@ -1,3 +1,10 @@
+Updates for Opto-Acoustic Imaging
+
+- Add OA ROI tool to create a syncronized ROI across a Sequence of Ultrasound Regions group in the same image.
+
+- More options to the OpenStudy remote API to support loading specific instances in a series.
+
+
 ClearCanvas
 ===========
 
